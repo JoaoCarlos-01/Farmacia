@@ -1,59 +1,24 @@
 package Farmacia;
 
-import java.util.Scanner;
-import java.time.*;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
-// Classe principal do sistema de estoque
-public class ControleEstoqueFarmacia {
-    private static final DateTimeFormatter DATEFMT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-    private static Scanner scanner = new Scanner(System.in);
-    private static Estoque estoque = new Estoque();
+public class Secundaria {
+    private final Scanner scanner;
+    private final Estoque estoque;
+    private final DateTimeFormatter dateFmt;
 
-    public static void main(String[] args) {
-        menuPrincipal();
+    public Secundaria(Scanner scanner, Estoque estoque, DateTimeFormatter dateFmt) {
+        this.scanner = scanner;
+        this.estoque = estoque;
+        this.dateFmt = dateFmt;
     }
 
-    private static void menuPrincipal() {
-        while (true) {
-            System.out.println("\n Sistema de Controle de Estoque ");
-            System.out.println("1) Cadastrar Produto");
-            System.out.println("2) Registrar Entrada");
-            System.out.println("3) Registrar Saída");
-            System.out.println("4) Consultar Produto");
-            System.out.println("5) Relatórios");
-            System.out.println("6) Sair");
-            System.out.print("Escolha uma opção: ");
-
-            String opcao = scanner.nextLine();
-            switch (opcao) {
-                case "1":
-                    cadastrarProduto();
-                    break;
-                case "2":
-                    registrarEntrada();
-                    break;
-                case "3":
-                    registrarSaida();
-                    break;
-                case "4":
-                    consultarProduto();
-                    break;
-                case "5":
-                    gerarRelatorios();
-                    break;
-                case "6":
-                    System.out.println("Saindo...");
-                    return;
-                default:
-                    System.out.println("Opção inválida!");
-            }
-        }
-    }
-
-    private static void cadastrarProduto() {
+    public void cadastrarProduto() {
         try {
             System.out.println("\n Cadastro de Produto ");
             System.out.print("Id: ");
@@ -79,7 +44,7 @@ public class ControleEstoqueFarmacia {
                 return;
             }
             System.out.print("Data de validade (dd/MM/yyyy): ");
-            LocalDate validade = LocalDate.parse(scanner.nextLine(), DATEFMT);
+            LocalDate validade = LocalDate.parse(scanner.nextLine(), dateFmt);
 
             Produto p = new Produto(id, nome, categoria, quantidade, preco, validade);
             estoque.adicionarProduto(p);
@@ -91,7 +56,7 @@ public class ControleEstoqueFarmacia {
         }
     }
 
-    private static void registrarEntrada() {
+    public void registrarEntrada() {
         try {
             System.out.print("\nId do produto: ");
             String id = scanner.nextLine();
@@ -114,7 +79,7 @@ public class ControleEstoqueFarmacia {
         }
     }
 
-    private static void registrarSaida() {
+    public void registrarSaida() {
         try {
             System.out.print("\nId do produto: ");
             String id = scanner.nextLine();
@@ -141,7 +106,7 @@ public class ControleEstoqueFarmacia {
         }
     }
 
-    private static void consultarProduto() {
+    public void consultarProduto() {
         System.out.print("\nBuscar por nome ou Id: ");
         String termo = scanner.nextLine().toLowerCase();
         for (Produto p : estoque.getProdutos()) {
@@ -151,34 +116,40 @@ public class ControleEstoqueFarmacia {
         }
     }
 
-    private static void gerarRelatorios() {
-        System.out.println("\n1) Movimentações");
-        System.out.println("2) Produtos disponíveis");
-        System.out.println("3) Produtos vencidos");
-        System.out.println("4) Itens a vencer (em até 30 dias)");
-        System.out.print("Escolha: ");
-        String opcao = scanner.nextLine();
+    public void gerarRelatorios() {
+        boolean exibindo = true;
+        while (exibindo) {
+            System.out.println("\n1) Movimentações");
+            System.out.println("2) Produtos disponíveis");
+            System.out.println("3) Produtos vencidos");
+            System.out.println("4) Itens a vencer (em até 30 dias)");
+            System.out.println("5) Voltar para o menu principal");
+            System.out.print("Escolha: ");
+            String opcao = scanner.nextLine();
 
-        switch (opcao) {
-            case "1":
-                estoque.exibirMovimentacoes();
-                break;
-            case "2":
-                estoque.exibirProdutos();
-                break;
-            case "3":
-                estoque.exibirVencidos();
-                break;
-            case "4":
-                estoque.exibirAVencer(30);
-                break;
-            default:
-                System.out.println("Opção inválida!");
+            switch (opcao) {
+                case "1":
+                    estoque.exibirMovimentacoes();
+                    break;
+                case "2":
+                    estoque.exibirProdutos();
+                    break;
+                case "3":
+                    estoque.exibirVencidos();
+                    break;
+                case "4":
+                    estoque.exibirAVencer(30);
+                    break;
+                case "5":
+                    exibindo = false;
+                    break;
+                default:
+                    System.out.println("Opção inválida!");
+            }
         }
     }
 }
 
-// Classe Produto
 class Produto {
     private String id;
     private String nome;
@@ -240,7 +211,6 @@ class Produto {
     }
 }
 
-// Classe Movimentação
 class Movimentacao {
     private String idProduto;
     private String tipo;
@@ -261,7 +231,6 @@ class Movimentacao {
     }
 }
 
-// Classe Estoque
 class Estoque {
     private List<Produto> produtos = new ArrayList<>();
     private List<Movimentacao> movimentacoes = new ArrayList<>();
