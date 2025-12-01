@@ -45,6 +45,10 @@ public class Secundaria {
             }
             System.out.print("Data de validade (dd/MM/yyyy): ");
             LocalDate validade = LocalDate.parse(scanner.nextLine(), dateFmt);
+            if(validade.isBefore(LocalDate.now())){
+                System.out.println("Produto não cadastrado! Produto vencido!");
+                return;
+            }
 
             Produto p = new Produto(id, nome, categoria, quantidade, preco, validade);
             estoque.adicionarProduto(p);
@@ -259,26 +263,26 @@ class Estoque {
     }
 
     public void exibirMovimentacoes() {
-        System.out.println("\n Movimentações ");
+        System.out.println("\n --------------Movimentações-------------- ");
         for (Movimentacao m : movimentacoes)
             System.out.println(m);
     }
 
     public void exibirProdutos() {
-        System.out.println("\n Produtos ");
+        System.out.println("\n --------------Produtos--------------");
         for (Produto p : produtos)
             System.out.println(p);
     }
 
     public void exibirVencidos() {
-        System.out.println("\n Produtos Vencidos ");
+        System.out.println("\n --------------Produtos Vencidos--------------");
         for (Produto p : produtos)
             if (p.vencido())
                 System.out.println(p);
     }
 
     public void exibirAVencer(int dias) {
-        System.out.println("\n Produtos a vencer em até " + dias + " dias ");
+        System.out.println("\n ------Produtos a vencer em até " + dias + " dias------");
         for (Produto p : produtos)
             if (!p.vencido() && p.aVencer(dias))
                 System.out.println(p);
